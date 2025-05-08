@@ -12,11 +12,13 @@ class Package:
         self.weight = weight
         self.notes = notes
 
-    # method for stringifying a Package object for readability
+    # method for stringifying a Package object and adding min fields widths
+    # for improved readability
     def __str__(self):
-        return (f"Package {self.package_id}: {self.address}, "
-                f"{self.city}, {self.state}, {self.zip_code}, "
-                f"{self.deadline}, {self.weight}, {self.notes}")
+        package_label = f"Package {self.package_id}:"
+        return (f"{package_label:<14} {self.address:50} "
+                f"{self.city:20} {self.state:8} {self.zip_code:8} "
+                f"{self.deadline:10} {self.weight:8}kg {self.notes:^65}")
 
     # method used in the custom_hash_table insert method to concat a duplicate
     # message to the package's note if the package ID has a duplicate attempt

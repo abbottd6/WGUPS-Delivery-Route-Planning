@@ -4,12 +4,14 @@ from utils.custom_hash_table import PackageHashTable
 from entities.package import Package
 
 # Reading package data from csv into lists
-with open ('../resources/WGUPS Package File.csv') as csvfile:
+with open ('./resources/WGUPS Package File.csv') as csvfile:
     package_data = list(csv.reader(csvfile, delimiter=','))
+    print("Package data updated")
 
 # Reading package distance table into lists
-with open ('../resources/WGUPS Distance Table.csv') as csvfile:
+with open ('./resources/WGUPS Distance Table.csv') as csvfile:
     distance_table = list(csv.reader(csvfile, delimiter=','))
+    print("Distance table updated")
 
 # Creating a list comprising the individual rows (i.e., packages) from csv.
 # The list excludes rows/arrays that do not begin with a digit;
