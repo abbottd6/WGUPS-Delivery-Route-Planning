@@ -1,5 +1,3 @@
-import package
-
 class PackageHashTable:
 
     # The constructor for hash table to determine size and create table
@@ -36,7 +34,7 @@ class PackageHashTable:
         bucket.append((key, value))
         self.count += 1
 
-# get method for retrieving hash table elements' values by their key
+    # get method for retrieving hash table elements' values by their key
     def get(self, key):
         index = self._hash(key)
         for k, v in self.table[index]:

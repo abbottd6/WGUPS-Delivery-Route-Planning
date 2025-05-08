@@ -1,13 +1,14 @@
 import csv
-from custom_hash_table import PackageHashTable
-from package import Package
+from resources import *
+from utils.custom_hash_table import PackageHashTable
+from entities.package import Package
 
 # Reading package data from csv into lists
-with open ('Course Provided Files/WGUPS Package File.csv') as csvfile:
+with open ('../resources/WGUPS Package File.csv') as csvfile:
     package_data = list(csv.reader(csvfile, delimiter=','))
 
 # Reading package distance table into lists
-with open ('Course Provided Files/WGUPS Distance Table.csv') as csvfile:
+with open ('../resources/WGUPS Distance Table.csv') as csvfile:
     distance_table = list(csv.reader(csvfile, delimiter=','))
 
 # Creating a list comprising the individual rows (i.e., packages) from csv.

@@ -1,8 +1,7 @@
-import package_data_parser
-import package
-import custom_hash_table
-from package_data_parser import package_hash_table
-from package_data_parser import package_keys
+from services import package_data_parser
+from entities import package
+from services.package_data_parser import package_hash_table
+from services.package_data_parser import package_keys
 
 # Printing all rows from the csv file
 for row in package_data_parser.package_data:
@@ -20,4 +19,5 @@ if (len(package_keys) == 40) and (package_hash_table.count == 40):
 test_package = package.Package(38, '410 S State St', 'Salt Lake City', 'UT',
                                '84111', 'EOD', '9', 'Can only be on truck 2')
 package_hash_table.insert(test_package.package_id, test_package)
+
 print(package_hash_table.get(test_package.package_id))
