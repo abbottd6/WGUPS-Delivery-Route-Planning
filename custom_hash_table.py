@@ -19,10 +19,11 @@ class PackageHashTable:
     # the _hash method on the package key.
     # Then search the hash table for an empty bucket using separate chaining
     # for collision resolution by storing kv pairs in a list at each bucket index.
-    # If the key already exists in the table, the value corresponding to that key is updated.
+    # If the key already exists in the table, the value corresponding to that key is
+    # updated and a message is concatenated onto the existing note to indicate
+    # that the ID is a duplicate.
     # Appends the package to the bucket list when an open index is found,
     # and then increments the counter for the number of elements in the hash table
-
     def insert(self, key, value):
         index = self._hash(key)
         bucket = self.table[index]
@@ -35,6 +36,7 @@ class PackageHashTable:
         bucket.append((key, value))
         self.count += 1
 
+# get method for retrieving hash table elements' values by their key
     def get(self, key):
         index = self._hash(key)
         for k, v in self.table[index]:
