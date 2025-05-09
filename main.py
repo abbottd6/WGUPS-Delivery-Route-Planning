@@ -1,9 +1,14 @@
 from services.print_all_packages import print_all_packages
+from services.print_dist_matrix import print_dist_matrix
 from services.prompt_for_package_id import prompt_for_package_id
 from services.main_menu import main_menu
 
 exit_delivery_monitor = False
 line_format = ""
+
+print_all_packages()
+print_dist_matrix()
+
 
 while not exit_delivery_monitor:
     main_menu()

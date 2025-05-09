@@ -2,6 +2,8 @@ from services.package_data_parser import package_keys
 from services.package_data_parser import package_hash_table
 from utils import custom_hash_table
 
+line_format = ''
+
 def prompt_for_package_id():
     user_input = input("Enter Package ID: ")
     while int(user_input) < 1 or int(user_input) > len(package_keys):
@@ -18,4 +20,6 @@ def prompt_for_package_id():
             break
 
     package_id = int(user_input)
-    print(package_hash_table.get(package_id))
+    print(f"\n{line_format:_<200}\n")
+    print(package_hash_table.get_by_id(package_id))
+    print(f"\n{line_format:_<200}\n")
