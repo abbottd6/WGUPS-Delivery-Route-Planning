@@ -35,11 +35,18 @@ class PackageHashTable:
         self.count += 1
 
     # get method for retrieving hash table elements' values by their key
-    def get(self, key):
+    def get_by_id(self, key):
         index = self._hash(key)
         for k, v in self.table[index]:
             if k == key:
                 return v
+        return None
+
+    def get_by_address(self, address):
+        for bucket in self.table:
+            for k, v in bucket:
+                if address in v.address:
+                    return v
         return None
 
 # defining static method to generate the next prime that is
