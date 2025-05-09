@@ -78,19 +78,18 @@ for row in distance_table_rows:
 
     # Parsing address/recipient/zipcode identifiers from csv rows and extracting the recipient name
     recipient = row[0].split('\n')
-    recipient = recipient[0]
+    recipient = recipient[1].strip()
 
     # Extracting initial letters of recipient info to generate a string abbreviation for the recipient
     # name to make the top row of the matrix readable and allow column values to line up visually with
     # their corresponding distance values
-    recipient_split = recipient.split()
-    recipient_abrev = "".join(word[0] for word in recipient_split[:6])
+    recipient_abrev = recipient[0:24]
 
     # Inserting abbreviated recipient names in corresponding top row index positions
     distance_matrix[0][index] = recipient_abrev
 
     # Inserting non-abbreviated recipient names along the corresponding rows in index 0
-    distance_matrix[index][0] = recipient
+    distance_matrix[index][0] = recipient_abrev
 
     # Mapping distance values from the csv to the correct location within the matrix
     for col in range(1, num_destinations):
@@ -105,6 +104,7 @@ for row in distance_table_rows:
             # if the value can be converted to a float, then it is added to the matrix in the position
             # that corresponds to its distance between two locations
             distance_matrix[index][col] = dist
+            distance_matrix[col][index] = dist
 
         # Catching errors from the attempt to convert to float from above and continuing i.e., skipping
         # that element if float conversion throws an error.

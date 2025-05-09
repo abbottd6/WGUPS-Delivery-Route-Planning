@@ -43,11 +43,12 @@ class PackageHashTable:
         return None
 
     def get_by_address(self, address):
+        package_match = []
         for bucket in self.table:
             for k, v in bucket:
                 if address in v.address:
-                    return v
-        return None
+                    package_match.append(v)
+        return package_match
 
 # defining static method to generate the next prime that is
 # greater than argument 'num'
