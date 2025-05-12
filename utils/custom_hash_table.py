@@ -3,7 +3,7 @@ class PackageHashTable:
     # The constructor for hash table to determine size and create table
     # Also, adds a count attribute that is incremented with each insertion
     def __init__(self, num_packages):
-        self.size = _next_prime(num_packages * 2)
+        self.size = _increment_for_prime(num_packages * 2)
         self.table = [[] for _ in range(self.size)]
         self.count = 0
 
@@ -52,7 +52,7 @@ class PackageHashTable:
 
 # defining static method to generate the next prime that is
 # greater than argument 'num'
-def _next_prime(num):
+def _increment_for_prime(num):
     def is_prime(x):
         if x <= 1:
             return False

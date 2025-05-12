@@ -1,11 +1,15 @@
-from services.delivery_route_generator import delivery_route_generator
+from services.nearest_neighbor_path_generator import nearest_neighbor_path_generator
 from services.print_all_packages import print_all_packages
-from services.print_dist_matrix import print_dist_matrix
 from services.prompt_for_package_id import prompt_for_package_id
 from services.main_menu import main_menu
 
 exit_delivery_monitor = False
 line_format = ""
+
+route = nearest_neighbor_path_generator()
+
+for destination in route:
+    print(destination)
 
 while not exit_delivery_monitor:
     main_menu()
@@ -27,7 +31,7 @@ while not exit_delivery_monitor:
         # NEEDS TO BE COMPLETED
 
     if user_input == '5':
-        delivery_route_generator()
+        nearest_neighbor_path_generator()
 
     if user_input == '6':
         exit_delivery_monitor = True

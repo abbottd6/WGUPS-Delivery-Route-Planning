@@ -79,6 +79,7 @@ for row in distance_table_rows:
     # Parsing address/recipient/zipcode identifiers from csv rows and extracting the recipient name
     recipient = row[0].split('\n')
     recipient = recipient[1].strip()
+    recipient = recipient.strip(',')
 
     # Extracting initial letters of recipient info to generate a string abbreviation for the recipient
     # name to make the top row of the matrix readable and allow column values to line up visually with
