@@ -1,15 +1,18 @@
+from services.delivery_batch_builder import delivery_batch_builder
 from services.nearest_neighbor_path_generator import nearest_neighbor_path_generator
 from services.print_all_packages import print_all_packages
 from services.prompt_for_package_id import prompt_for_package_id
 from services.main_menu import main_menu
+from utils.instantiate_delivery_infra import instantiate_delivery_infra
+from entities.truck import Truck
 
 exit_delivery_monitor = False
 line_format = ""
 
-route = nearest_neighbor_path_generator()
+instantiate_delivery_infra()
 
-for destination in route:
-    print(destination)
+route = nearest_neighbor_path_generator()
+delivery_batch_builder(route)
 
 while not exit_delivery_monitor:
     main_menu()

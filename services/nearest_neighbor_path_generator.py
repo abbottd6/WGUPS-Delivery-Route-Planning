@@ -11,7 +11,6 @@ def nearest_neighbor_path_generator():
     current_node_address = ''
     current_node_index = 0
     visited_nodes = []
-    packages_delivered_count = 0
     aggregate_time = 0.0
     destination_count = 0
     num_packages_delivered = 0
@@ -75,18 +74,18 @@ def nearest_neighbor_path_generator():
 
         if num_packages_delivered >= len(package_keys):
 
-            print(f"\n{line_format:_<200}\n")
-            print("ALL PACKAGES DELIVERED\n")
-            print("Locations visited: ", len(visited_nodes))
-            print("Number of packages delivered:", num_packages_delivered)
-            print("Total distance between deliveries:", sum(distance_traveled_array))
-            print("Elapsed Time: ", aggregate_time, "\n")
-            print(f"\n{line_format:_<200}\n")
-            print("Visited nodes length: ", len(visited_nodes))
-            print("Distance traveled array length: ", len(distance_traveled_array))
+            # print(f"\n{line_format:_<200}\n")
+            # print("ALL PACKAGES DELIVERED\n")
+            # print("Locations visited: ", len(visited_nodes))
+            # print("Number of packages delivered:", num_packages_delivered)
+            # print("Total distance between deliveries:", sum(distance_traveled_array))
+            # print("Elapsed Time: ", aggregate_time, "\n")
+            # print(f"\n{line_format:_<200}\n")
+            # print("Visited nodes length: ", len(visited_nodes))
+            # print("Distance traveled array length: ", len(distance_traveled_array))
             break
 
-    nearest_neighbor_route = [None] * len(visited_nodes)
+    nearest_neighbor_route = {}
     for d, destination in enumerate(visited_nodes):
         if d == 0:
             route_info = {
