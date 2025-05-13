@@ -39,10 +39,10 @@ def delivery_batch_builder(route_path):
                 carryover_packages.append(package_hash_table.get_by_id(package.package_id))
         if (batch_package_count == 16) or (package_match_count == len(package_keys)) or can_load_more == False:
 
-            print("\nTruck number: ", truck_number)
-            print("Batch", truck_number, "package count: ", batch_package_count)
-            if package_match_count == len(package_keys):
-                print("\nTotal package count: ", total_package_count)
+            # print("\nTruck number: ", truck_number)
+            # print("Batch", truck_number, "package count: ", batch_package_count)
+            # if package_match_count == len(package_keys):
+            #     print("\nTotal package count: ", total_package_count)
 
             Truck.trucks_dict.get(truck_number).load_truck(batch)
 

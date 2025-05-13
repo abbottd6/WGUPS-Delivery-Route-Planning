@@ -5,7 +5,11 @@ from utils.calc_travel_time import calc_travel_time
 
 line_format = ''
 
-def nearest_neighbor_path_generator():
+def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
+                                    distance_matrix):
+
+
+
 
     distance_traveled_array = []
     current_node_address = ''
@@ -47,21 +51,11 @@ def nearest_neighbor_path_generator():
         # print("NEXT_NODE 'DISTANCE MATRIX' ROW INDEX:", current_node_index)
 
         associated_packages = package_hash_table.get_by_address(nearest_neighbor[0])
-        # for i, package in enumerate(associated_packages, start=1):
-        #     num_packages_delivered += 1
-        #     print("Associated Package", i, ":\n", package)
-
-        # for row in associated_packages:
-        #     print(row)
 
         visited_nodes.append(associated_packages[0].address)
         # print(visited_nodes[0])
 
         path_time = calc_travel_time(nearest_neighbor[1])
-        # print("Delivery #", delivery_stop, ": required", nearest_neighbor[1],
-        #         "miles of travel, included", len(associated_packages), "packages, "
-        #         "and was completed in", path_time, "minutes. \n")
-        # print(f"\n{line_format:_<200}\n")
 
         aggregate_time += path_time
         distance_traveled_array.append(nearest_neighbor[1])
@@ -73,16 +67,6 @@ def nearest_neighbor_path_generator():
         num_packages_delivered += len(associated_packages)
 
         if num_packages_delivered >= len(package_keys):
-
-            # print(f"\n{line_format:_<200}\n")
-            # print("ALL PACKAGES DELIVERED\n")
-            # print("Locations visited: ", len(visited_nodes))
-            # print("Number of packages delivered:", num_packages_delivered)
-            # print("Total distance between deliveries:", sum(distance_traveled_array))
-            # print("Elapsed Time: ", aggregate_time, "\n")
-            # print(f"\n{line_format:_<200}\n")
-            # print("Visited nodes length: ", len(visited_nodes))
-            # print("Distance traveled array length: ", len(distance_traveled_array))
             break
 
     nearest_neighbor_route = {}
