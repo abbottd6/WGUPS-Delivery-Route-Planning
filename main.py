@@ -1,10 +1,8 @@
-from services.delivery_batch_builder import delivery_batch_builder
-from services.nearest_neighbor_path_generator import nearest_neighbor_path_generator
 from services.package_data_parser import package_keys, package_hash_table
 from services.package_priority_parsing_service import package_priority_parsing_service
-from services.print_all_packages import print_all_packages
-from services.prompt_for_package_id import prompt_for_package_id
-from services.main_menu import main_menu
+from UI_components.print_all_packages import print_all_packages
+from UI_components.prompt_for_package_id import prompt_for_package_id
+from UI_components.main_menu import main_menu
 from utils.instantiate_delivery_infra import instantiate_delivery_infra
 
 exit_delivery_monitor = False
@@ -20,7 +18,7 @@ while not exit_delivery_monitor:
     user_input = input()
 
     if user_input == '1':
-        print_all_packages(package_keys, "All Packages")
+        print_all_packages(package_keys, package_hash_table, "All Packages")
 
     if user_input == '2':
         prompt_for_package_id()
@@ -33,5 +31,5 @@ while not exit_delivery_monitor:
         user_time = input("Enter time in format: HH:MM:SS\n")
         # NEEDS TO BE COMPLETED
 
-    if user_input == '6':
+    if user_input == '5':
         exit_delivery_monitor = True

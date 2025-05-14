@@ -2,7 +2,7 @@ line_format = ''
 
 def print_dist_matrix(some_distance_matrix, n):
     print(f"\n{line_format:_<200}\n")
-    print("RECIPIENT DISTANCE MATRIX")
+    print("DESTINATION DISTANCE MATRIX")
     print(f"{line_format:_<200}\n")
     for i in range(n):
         row = some_distance_matrix[i]
