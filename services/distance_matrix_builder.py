@@ -7,21 +7,26 @@ def distance_matrix_builder(some_package_keys, some_package_hash_table):
 
     batch_destinations = [hub]
 
+    # Add unique addresses to array of addresses for matrix population.
     for package_id in some_package_keys:
         temp_package = some_package_hash_table.get_by_id(package_id)
-        # print(package_id)
-        # print(temp_package)
         for column in distance_matrix[0]:
             if column in temp_package.address and not column in batch_destinations:
                 batch_destinations.append(column)
 
+    # Create square matrix with dimensions equivalent to number of destinations + 1.
     n = len(batch_destinations) + 1
     temp_dist_matrix = [[0 for _ in range(n)] for _ in range(n)]
 
+    # Populate first row and first column with addresses for distance associations.
     for i, destination in enumerate(batch_destinations, start=1):
         temp_dist_matrix[0][i] = destination
         temp_dist_matrix[i][0] = destination
 
+    # Get distances from full distance matrix that correspond only to distances between
+    # addresses in this distance matrix.
+    # Insert the distances in to the matrix at the coordinates that correspond to the associated
+    # addresses.
     for address in distance_matrix[0]:
         try:
             primary_index = batch_destinations.index(address) + 1
@@ -35,4 +40,5 @@ def distance_matrix_builder(some_package_keys, some_package_hash_table):
 
     print_dist_matrix(temp_dist_matrix, n)
 
+    # Return this distance matrix for assignment where called.
     return temp_dist_matrix

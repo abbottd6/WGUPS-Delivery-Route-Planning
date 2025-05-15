@@ -8,20 +8,33 @@ from utils.custom_hash_table import PackageHashTable
 
 def package_priority_parsing_service(some_package_keys, some_package_hash_table):
 
+    # Create arrays for three separate package priority classifications.
     priority_package_keys = []
     constrained_package_keys = []
     standard_package_keys = []
 
+    # Use package_id from package_keys to loop through all packages to determine
+    # package priority classification.
     for package_id in some_package_keys:
         temp_package = some_package_hash_table.get_by_id(package_id)
+        # if a package has any delivery note, then it is a constrained package.
         if temp_package.notes:
             constrained_package_keys.append(package_id)
+        # If a package has a delivery deadline, and the package is not already
+        # in constrained packages, then it is assigned to the priority packages array.
         if "EOD" not in temp_package.deadline:
             if package_id in constrained_package_keys:
                 continue
             else:
                 priority_package_keys.append(package_id)
+        # If a package is neither assigned to constrained packages nor priority packages,
+        # then it is a standard package.
         if package_id not in constrained_package_keys and package_id not in priority_package_keys:
+            # There are too many standard packages to fit on one truck,
+            # so standard packages are assigned to standard package array, so long as the
+            # number of packages in standard packages does not exceed truck capacity.
+            # When the standard package array reaches maximum size, the remaining standard
+            # packages are dispersed between priority and constrained package arrays
             if len(standard_package_keys) < 16:
                 standard_package_keys.append(package_id)
             elif len(priority_package_keys):
@@ -29,34 +42,18 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
             elif len(constrained_package_keys):
                 constrained_package_keys.append(package_id)
 
+    # Create hash tables for each package classification array based on the size of the array
     constrained_delivery_package_table = PackageHashTable(len(constrained_package_keys))
     priority_delivery_package_table = PackageHashTable(len(priority_package_keys))
     standard_delivery_package_table = PackageHashTable(len(standard_package_keys))
 
+    # Take package classification arrays and build distinct hash tables for each classification
     for package_id in priority_package_keys:
         priority_delivery_package_table.insert(package_id, some_package_hash_table.get_by_id(package_id))
     for package_id in constrained_package_keys:
         constrained_delivery_package_table.insert(package_id, some_package_hash_table.get_by_id(package_id))
     for package_id in standard_package_keys:
         standard_delivery_package_table.insert(package_id, some_package_hash_table.get_by_id(package_id))
-
-
-        # temp_package = some_package_hash_table.get_by_id(package_id)
-        # package_notes = temp_package.notes
-        #
-        # if package_notes:
-        #     if "delivered with" in package_notes or "can only be on truck" in package_notes:
-        #         constrained_delivery_package_table.insert(package_id, some_package_hash_table.get_by_id(package_id))
-        #     if "delayed on flight" in package_notes:
-        #         if "EOD" in some_package_hash_table.get(package_id).deadline:
-        #             standard_delivery_package_table.insert(package_id, some_package_hash_table.get_by_id(package_id))
-        #         else:
-        #             priority_delivery_package_table.insert(package_id, some_package_hash_table.get_by_id(package_id))
-        # else:
-        #     if "EOD" in temp_package.deadline:
-        #         standard_delivery_package_table.insert(package_id, some_package_hash_table.get_by_id(package_id))
-        #     else:
-        #         priority_delivery_package_table.insert(package_id, some_package_hash_table.get_by_id(package_id))
 
     print("\nPrio keys: ", priority_package_keys)
     print_all_packages(priority_package_keys, priority_delivery_package_table, "Priority Delivery Packages")
@@ -67,6 +64,8 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
     print("\nStandard Keys: ", standard_package_keys)
     print_all_packages(standard_package_keys, standard_delivery_package_table, "Standard Delivery Packages")
 
+    # Take classification distinct package hash tables and generate distance matrices for packages
+    # in that classification group
     priority_package_distance_matrix = distance_matrix_builder(priority_package_keys,
                                                              priority_delivery_package_table)
     constrained_package_distance_matrix = distance_matrix_builder(constrained_package_keys,
@@ -74,6 +73,8 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
     standard_package_distance_matrix = distance_matrix_builder(standard_package_keys,
                                                              standard_delivery_package_table)
 
+    # Pass the distinct package classification data sets (keys, hash table, distance matrix)
+    # into the nearest neighbor path generator to create a greedy delivery route
     priority_delivery_route = nearest_neighbor_path_generator(priority_package_keys, priority_delivery_package_table,
                                                               priority_package_distance_matrix)
     print(priority_delivery_route)
@@ -84,14 +85,13 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
         total_distance += destination["distance"]
     print("total distance: ", total_distance, "route duration: ", calc_travel_time(total_distance))
 
-    # NEED TO ADJUST THE PRIORITY DELIVERY ORDER BECAUSE OF THE STUPID ONE THAT HAS TO BE DELIVERED BY 9
-
     constrained_delivery_route = nearest_neighbor_path_generator(constrained_package_keys,
                                                                  constrained_delivery_package_table,
                                                                  constrained_package_distance_matrix)
     standard_delivery_route = nearest_neighbor_path_generator(standard_package_keys, standard_delivery_package_table,
                                                               standard_package_distance_matrix)
 
+    # Take delivery route and load packages into truck
     delivery_batch_builder(priority_delivery_route, priority_package_keys,
                            priority_delivery_package_table, "priority batch")
 
