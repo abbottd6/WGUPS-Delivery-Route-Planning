@@ -17,11 +17,13 @@ class Truck:
         driver_info = f"Driver: {self.driver_id}"
         packages_str = "\n".join(str(p) for p in self.packages) if self.packages else "No packages loaded"
         line_format = ""
-        return (f"\n{line_format:_<200}\n"
+        return (f"\n{line_format:_<400}\n"
+                f"Batch {self.truck_id} Loaded onto Truck with Optimized Route:"
+                f"\n{line_format:_<400}\n"
                 f"{truck_info:<4} {driver_info:<4}\n"
                 f"Truck Location: {self.current_location}\n"
                 f"{packages_str}\n"
-                f"\n{line_format:_<200}\n")
+                f"\n{line_format:_<400}\n")
 
     def load_truck(self, batch):
         while len(batch) > 0:

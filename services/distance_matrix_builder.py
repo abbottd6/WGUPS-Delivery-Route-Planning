@@ -38,7 +38,5 @@ def distance_matrix_builder(some_package_keys, some_package_hash_table):
         except ValueError:
             continue
 
-    # print_dist_matrix(temp_dist_matrix, n)
-
     # Return this distance matrix for assignment where called.
     return temp_dist_matrix

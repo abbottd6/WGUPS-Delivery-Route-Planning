@@ -20,7 +20,7 @@ while not exit_delivery_monitor:
 
     # Print all package status and mileage
     if user_input == '1':
-        print_all_packages(package_keys, package_hash_table, "All Packages")
+        print(print_all_packages(package_keys, package_hash_table, "All Packages"))
 
     # Print single package info by ID
     if user_input == '2':

@@ -106,9 +106,6 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
                 if row[0] == nearest_neighbor[0]:
                     current_node_index = i
 
-            # print("NEXT PATH NODE AND DISTANCE:", nearest_neighbor)
-            # print("NEXT_NODE 'DISTANCE MATRIX' ROW INDEX:", current_node_index)
-
             # Gather packages associated with the address of nearest_neighbor into a hash table.
             associated_packages = some_package_hash_table.get_by_address(nearest_neighbor[0])
 
@@ -167,5 +164,4 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
             nearest_neighbor_route[d + 1] = route_termination_info
 
     # Return the route dictionary for assignment where called.
-    # print("This is the end of one path generator")
     return nearest_neighbor_route
