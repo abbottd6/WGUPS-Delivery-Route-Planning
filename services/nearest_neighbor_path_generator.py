@@ -23,42 +23,51 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
         if "EOD" not in some_package_hash_table.get_by_id(package_key).deadline:
             deadline_package_keys.append(package_key)
 
-    # Loop to compare package deadline with the deadlines of other packages.
-    for package_key in deadline_package_keys:
-        package_to_check = some_package_hash_table.get_by_id(package_key)
-        if "EOD" in package_to_check.deadline:
-            continue
-        # Convert given time string to a datetime object of format HH:MM AM/PM.
-        this_deadline = datetime.strptime(package_to_check.deadline, time_format).time()
-        # If this_deadline is less than any other deadline (i.e., deadline is sooner), then the package has priority.
-        if any(
-                this_deadline < (datetime.strptime(some_package_hash_table.get_by_id(other_key).deadline,
-                    time_format).time())
-                for other_key in deadline_package_keys
-        ):
-            # If the package has priority, then add it to the high_priority_packages array and the key array.
-            high_priority_packages.append(package_to_check)
-            high_priority_package_keys.append(package_key)
+    if deadline_package_keys:
+        # Loop to compare package deadline with the deadlines of other packages.
+        for package_key in deadline_package_keys:
+            package_to_check = some_package_hash_table.get_by_id(package_key)
+            if "EOD" in package_to_check.deadline:
+                continue
+            # Convert given time string to a datetime object of format HH:MM AM/PM.
+            this_deadline = datetime.strptime(package_to_check.deadline, time_format).time()
+            # If this_deadline is less than any other deadline (i.e., deadline is sooner), then the package has priority.
+            if any(
+                    this_deadline < (datetime.strptime(some_package_hash_table.get_by_id(other_key).deadline,
+                        time_format).time())
+                    for other_key in deadline_package_keys
+            ):
+                # If the package has priority, then add it to the high_priority_packages array and the key array.
+                high_priority_packages.append(package_to_check)
+                high_priority_package_keys.append(package_key)
 
     # Find the starting node i.e., the hub.
     for i, row in enumerate(some_distance_matrix[1:], start=1):
         if row[1] == 0.0:
             current_node_address = row[0]
-            visited_nodes.append(current_node_address)
+            visited_nodes.append({
+                "address": current_node_address,
+                "associated_packages": None
+            })
             current_node_index = i
         destination_count = i
 
     # Check if there are any packages in high priority package array for this batch.
     if high_priority_packages:
+
         # For all packages in the high_priority_packages_array (identified by keys array).
         for package_key in high_priority_package_keys:
+            print("HIGH PRIO PACKAGE KEY: ", package_key)
             # Get package delivery address from hash table.
             this_address = some_package_hash_table.get_by_id(package_key).address
             # Get all other address associated packages.
             associated_packages = some_package_hash_table.get_by_address(
                 some_package_hash_table.get_by_id(package_key).address)
             # Add the high_priority package address to visited nodes.
-            visited_nodes.append(associated_packages[0].address)
+            visited_nodes.append({
+                "address": this_address,
+                "associated_packages": associated_packages
+            })
 
             # Get the distance matrix index position for this address.
             for i, address in enumerate(some_distance_matrix[0][1:], start=1):
@@ -80,7 +89,6 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
         # because there are no more priority packages
         high_priority_packages.clear()
 
-
     if not high_priority_packages:
         # Create an empty dictionary to hold the distances TO other destinations FROM current_node.
         neighbor_distances_array = {}
@@ -89,7 +97,7 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
             for row in some_distance_matrix[1:]:
                 # First, check that the distance being added does not correspond to an already visited
                 # destination.
-                if not any(row[0] in node for node in visited_nodes):
+                if not any(row[0] in node['address'] for node in visited_nodes):
                     # If the distance value does not correspond to a visited node, add it to distance
                     # dictionary, where the key is the node address and the value is the distance to
                     # that node from current_node.
@@ -111,7 +119,12 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
 
             # Add associated_packages address to visited nodes if there are packages associated with
             # this address.
-            visited_nodes.append(associated_packages[0].address)
+            current_node_address = nearest_neighbor[0]
+
+            visited_nodes.append({
+                "address": current_node_address,
+                "associated_packages": associated_packages
+            })
             # print(visited_nodes[0])
 
             path_time = calc_travel_time(nearest_neighbor[1])
@@ -136,31 +149,34 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
     for d, destination in enumerate(visited_nodes):
         if d == 0:
             route_info = {
-                "start_location": "HUB",
-                "address": visited_nodes[0],
+                "destination_number": d,
+                "address": HUB_ADDRESS,
+                "associated_packages": None,
                 "distance": 0
             }
-        else:
+        elif 0 < d < len(visited_nodes):
             route_info = {
-                "delivery_number": d,
-                "address": visited_nodes[d],
+                "destination_number": d,
+                "address": destination["address"],
+                "associated_packages": destination["associated_packages"],
                 "distance": distance_traveled_array[d - 1]
             }
         # Calculate return to hub distance from final delivery address.
-        if d == len(visited_nodes) - 1:
+        elif d == len(visited_nodes):
             final_delivery_matrix_index = some_distance_matrix[0].index(route_info["address"])
             return_to_hub_distance = some_distance_matrix[final_delivery_matrix_index][1]
 
             route_termination_info = {
-                "end_location": "HUB",
+                "destination_number": d + 1,
                 "address": HUB_ADDRESS,
+                "associated_packages": None,
                 "distance": return_to_hub_distance
             }
         # Add dictionary value for each destination to route dictionary.
         nearest_neighbor_route[d] = route_info
 
         # Add return to HUB to delivery route if all deliveries for route are complete.
-        if d == len(visited_nodes) - 1:
+        if d == len(visited_nodes):
             nearest_neighbor_route[d + 1] = route_termination_info
 
     # Return the route dictionary for assignment where called.

@@ -1,4 +1,4 @@
-from UI_components.print_route_distances import print_route_distances
+from UI_components.print_route_metadata import print_route_metadata
 from entities.route import Route
 from entities.truck import Truck
 from services.delivery_batch_builder import delivery_batch_builder
@@ -92,6 +92,7 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
         route_label="Priority Packages",
         route_package_keys=priority_package_keys,
         route_package_table=priority_delivery_package_table,
+        route_num_destinations=len(priority_package_distance_matrix[0]) - 1,
         route_distance_matrix=priority_package_distance_matrix,
         route=priority_delivery_route
     )
@@ -99,6 +100,7 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
         route_label="Constrained Packages",
         route_package_keys=constrained_package_keys,
         route_package_table=constrained_delivery_package_table,
+        route_num_destinations=len(constrained_package_distance_matrix[0]) - 1,
         route_distance_matrix=constrained_package_distance_matrix,
         route=constrained_delivery_route
     )
@@ -106,6 +108,7 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
         route_label="Standard Packages",
         route_package_keys=standard_package_keys,
         route_package_table=standard_delivery_package_table,
+        route_num_destinations=len(standard_package_distance_matrix[0]) - 1,
         route_distance_matrix=standard_package_distance_matrix,
         route = standard_delivery_route
     )

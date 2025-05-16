@@ -1,4 +1,4 @@
-from services.delivery_service import delivery_service
+from services.start_delivery_service import start_delivery_service
 from services.package_data_parser import package_keys, package_hash_table, distance_matrix
 from services.package_priority_parsing_service import package_priority_parsing_service
 from UI_components.print_all_packages import print_all_packages
@@ -11,7 +11,7 @@ line_format = ""
 
 instantiate_delivery_infra()
 
-delivery_service(package_keys, package_hash_table, distance_matrix)
+start_delivery_service(package_keys, package_hash_table, distance_matrix)
 
 while not exit_delivery_monitor:
     main_menu()
