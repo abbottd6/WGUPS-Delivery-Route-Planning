@@ -1,4 +1,5 @@
 from UI_components.print_route_metadata import print_route_metadata
+from entities.package import Package
 from entities.route import Route
 from entities.truck import Truck
 from services.delivery_batch_builder import delivery_batch_builder
@@ -14,6 +15,19 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
     priority_package_keys = []
     constrained_package_keys = []
     standard_package_keys = []
+
+    package_to_correct = some_package_hash_table.get_by_id(9)
+    package_to_correct.update(
+        address="410 S State St",
+        city="Salt Lake City",
+        state="UT",
+        zip_code="84111",
+        deadline="EOD",
+        weight=2,
+        notes="Address corrected at 10:20 AM"
+    )
+
+    print("Package corrected", package_to_correct)
 
     # Use package_id from package_keys to loop through all packages to determine
     # package priority classification.

@@ -57,7 +57,6 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
 
         # For all packages in the high_priority_packages_array (identified by keys array).
         for package_key in high_priority_package_keys:
-            print("HIGH PRIO PACKAGE KEY: ", package_key)
             # Get package delivery address from hash table.
             this_address = some_package_hash_table.get_by_id(package_key).address
             # Get all other address associated packages.

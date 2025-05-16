@@ -13,6 +13,12 @@ class Package:
         self.notes = notes
         self.status = "At Hub"
 
+    def update(self, **kwargs):
+        for key, value in kwargs.items():
+            if not hasattr(self,key):
+                raise AttributeError(f"{key} is not a valid attribute of Package")
+            setattr(self,key,value)
+
     # method for stringifying a Package object and adding min fields widths
     # for improved readability
     def __str__(self):
