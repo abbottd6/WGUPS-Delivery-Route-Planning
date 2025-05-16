@@ -18,7 +18,7 @@ def delivery_batch_builder(route_path, some_package_keys, some_package_hash_tabl
         truck_number = 4
 
     for delivery_stop in route_path.values():
-        # Check whether there are carryover packages from last batch; see --->>> below.
+        # Check whether there are carryover_packages from last batch; see ---->>>> below.
         # If carryover packages exist, add them to current batch.
         if carryover_packages:
             for carryover_package in carryover_packages:
@@ -47,6 +47,7 @@ def delivery_batch_builder(route_path, some_package_keys, some_package_hash_tabl
             can_load_more = True
         else:
             can_load_more = False
+            # ---->>>>
             # If this point is reached, then the number of associated_packages is too large to fit in
             # the current truck batch. But the loop iteration has already visited this address, so
             # we cannot just continue the loop or these packages will be skipped for truck loading.

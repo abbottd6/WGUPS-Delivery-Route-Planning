@@ -17,26 +17,28 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
     destination_count = 0
     num_packages_delivered = 0
 
-    # Determine whether there are packages with deadline priority
+    # Isolate packages with specified delivery time deadlines into a separate array.
     deadline_package_keys = []
     for package_key in some_package_keys:
         if "EOD" not in some_package_hash_table.get_by_id(package_key).deadline:
             deadline_package_keys.append(package_key)
 
+    # Loop to compare package deadline with the deadlines of other packages.
     for package_key in deadline_package_keys:
         package_to_check = some_package_hash_table.get_by_id(package_key)
         if "EOD" in package_to_check.deadline:
             continue
+        # Convert given time string to a datetime object of format HH:MM AM/PM.
         this_deadline = datetime.strptime(package_to_check.deadline, time_format).time()
+        # If this_deadline is less than any other deadline (i.e., deadline is sooner), then the package has priority.
         if any(
                 this_deadline < (datetime.strptime(some_package_hash_table.get_by_id(other_key).deadline,
                     time_format).time())
                 for other_key in deadline_package_keys
         ):
+            # If the package has priority, then add it to the high_priority_packages array and the key array.
             high_priority_packages.append(package_to_check)
             high_priority_package_keys.append(package_key)
-            for package in high_priority_packages:
-                print("high priority packages", package)
 
     # Find the starting node i.e., the hub.
     for i, row in enumerate(some_distance_matrix[1:], start=1):
@@ -46,22 +48,36 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
             current_node_index = i
         destination_count = i
 
+    # Check if there are any packages in high priority package array for this batch.
     if high_priority_packages:
+        # For all packages in the high_priority_packages_array (identified by keys array).
         for package_key in high_priority_package_keys:
+            # Get package delivery address from hash table.
             this_address = some_package_hash_table.get_by_id(package_key).address
+            # Get all other address associated packages.
             associated_packages = some_package_hash_table.get_by_address(
                 some_package_hash_table.get_by_id(package_key).address)
+            # Add the high_priority package address to visited nodes.
             visited_nodes.append(associated_packages[0].address)
 
+            # Get the distance matrix index position for this address.
             for i, address in enumerate(some_distance_matrix[0][1:], start=1):
                 if this_address in address:
                     this_address_index = i
+                    # break from loop when found
                     break
-            distance_traveled_array.append(some_distance_matrix[this_address_index][1])
+            # Get the distance from the current address (e.g., the hub) to this high priority delivery address
+            # and append it to the distance traveled array.
+            distance_traveled_array.append(some_distance_matrix[this_address_index][current_node_index])
+            # Set current_node_index and current_node_address for next loop iteration
             current_node_index = this_address_index
             current_node_address = this_address
 
+            # Increment the number of packages delivered by the number of packages associated with this address
             num_packages_delivered += len(associated_packages)
+
+        # Clear the list so that the next loop iteration can skip this block
+        # because there are no more priority packages
         high_priority_packages.clear()
 
 
