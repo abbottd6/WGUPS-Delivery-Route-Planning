@@ -1,3 +1,5 @@
+from UI_components.print_route_distances import print_route_distances
+from entities.route import Route
 from entities.truck import Truck
 from services.delivery_batch_builder import delivery_batch_builder
 from services.distance_matrix_builder import distance_matrix_builder
@@ -55,14 +57,14 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
     for package_id in standard_package_keys:
         standard_delivery_package_table.insert(package_id, some_package_hash_table.get_by_id(package_id))
 
-    print("\nPrio keys: ", priority_package_keys)
-    print_all_packages(priority_package_keys, priority_delivery_package_table, "Priority Delivery Packages")
-
-    print("\nConstrained Keys: ", constrained_package_keys)
-    print_all_packages(constrained_package_keys, constrained_delivery_package_table, "Constrained Delivery Packages")
-
-    print("\nStandard Keys: ", standard_package_keys)
-    print_all_packages(standard_package_keys, standard_delivery_package_table, "Standard Delivery Packages")
+    # print("\nPrio keys: ", priority_package_keys)
+    # print_all_packages(priority_package_keys, priority_delivery_package_table, "Priority Delivery Packages")
+    #
+    # print("\nConstrained Keys: ", constrained_package_keys)
+    # print_all_packages(constrained_package_keys, constrained_delivery_package_table, "Constrained Delivery Packages")
+    #
+    # print("\nStandard Keys: ", standard_package_keys)
+    # print_all_packages(standard_package_keys, standard_delivery_package_table, "Standard Delivery Packages")
 
     # Take classification distinct package hash tables and generate distance matrices for packages
     # in that classification group
@@ -75,21 +77,40 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
 
     # Pass the distinct package classification data sets (keys, hash table, distance matrix)
     # into the nearest neighbor path generator to create a greedy delivery route
+
     priority_delivery_route = nearest_neighbor_path_generator(priority_package_keys, priority_delivery_package_table,
                                                               priority_package_distance_matrix)
-    print(priority_delivery_route)
-    total_distance = 0
-    for destination in priority_delivery_route.values():
-        if "4001 South 700 East" in destination["address"]:
-            continue
-        total_distance += destination["distance"]
-    print("total distance: ", total_distance, "route duration: ", calc_travel_time(total_distance))
+
+    # print_route_distances(priority_delivery_route, len(priority_package_distance_matrix[0]))
+    # total_distance = 0
+    # for destination in priority_delivery_route.values():
+    #     if "4001 South 700 East" in destination["address"]:
+    #         continue
+    #     total_distance += destination["distance"]
+    # print("total distance: ", total_distance, "route duration: ", calc_travel_time(total_distance))
 
     constrained_delivery_route = nearest_neighbor_path_generator(constrained_package_keys,
                                                                  constrained_delivery_package_table,
                                                                  constrained_package_distance_matrix)
+
+    # print_route_distances(constrained_delivery_route, len(constrained_package_distance_matrix))
+    # total_distance = 0
+    # for destination in constrained_delivery_route.values():
+    #     if "4001 South 700 East" in destination["address"]:
+    #         continue
+    #     total_distance += destination["distance"]
+    # print("Total distance: ", total_distance, "route duration: ", calc_travel_time(total_distance))
+
     standard_delivery_route = nearest_neighbor_path_generator(standard_package_keys, standard_delivery_package_table,
                                                               standard_package_distance_matrix)
+
+    # print_route_distances(standard_delivery_route, len(standard_package_distance_matrix))
+    # total_distance = 0
+    # for destination in standard_delivery_route.values():
+    #     if "4001 South 700 East" in destination["address"]:
+    #         continue
+    #     total_distance += destination["distance"]
+    # print("Total distance: ", total_distance, "route duration: ", calc_travel_time(total_distance))
 
     # Take delivery route and load packages into truck
     delivery_batch_builder(priority_delivery_route, priority_package_keys,
@@ -101,8 +122,41 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
     delivery_batch_builder(standard_delivery_route, standard_package_keys, standard_delivery_package_table,
                            "standard batch")
 
-    for truck in Truck.trucks_dict.values():
-        print(truck)
+    # for truck in Truck.trucks_dict.values():
+    #     print(truck)
+
+    # adding delivery routes to a dictionary for later use
+    # delivery_routes = {"Priority": priority_delivery_route, "Constrained": constrained_delivery_route,
+    #                    "Standard": standard_delivery_route}
+
+    priority_route_object = Route(
+        route_label="Priority Packages",
+        route_package_keys=priority_package_keys,
+        route_package_table=priority_delivery_package_table,
+        route_distance_matrix=priority_package_distance_matrix,
+        route=priority_delivery_route
+    )
+    constrained_route_object = Route(
+        route_label="Constrained Packages",
+        route_package_keys=constrained_package_keys,
+        route_package_table=constrained_delivery_package_table,
+        route_distance_matrix=constrained_package_distance_matrix,
+        route=constrained_delivery_route
+    )
+    standard_route_object = Route(
+        route_label="Standard Packages",
+        route_package_keys=standard_package_keys,
+        route_package_table=standard_delivery_package_table,
+        route_distance_matrix=standard_package_distance_matrix,
+        route = standard_delivery_route
+    )
+
+    route_objects = [priority_route_object, constrained_route_object, standard_route_object]
+
+    # returning the dictionary of routes
+    return route_objects
+
+
 
 
 

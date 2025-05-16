@@ -167,5 +167,5 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
             nearest_neighbor_route[d + 1] = route_termination_info
 
     # Return the route dictionary for assignment where called.
-    print("This is the end of one path generator")
+    # print("This is the end of one path generator")
     return nearest_neighbor_route
