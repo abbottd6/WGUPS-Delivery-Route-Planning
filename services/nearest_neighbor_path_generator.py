@@ -130,7 +130,6 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
 
             aggregate_time += path_time
             distance_traveled_array.append(nearest_neighbor[1])
-            neighbor_distances_array[current_node_address] = nearest_neighbor[0]
 
             # Empty reusable data structure for next iteration.
             neighbor_distances_array.clear()
@@ -158,10 +157,10 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
                 "destination_number": d,
                 "address": destination["address"],
                 "associated_packages": destination["associated_packages"],
-                "distance": distance_traveled_array[d - 1]
+                "distance": sum(distance_traveled_array[0:d])
             }
         # Calculate return to hub distance from final delivery address.
-        elif d == len(visited_nodes):
+        if d == len(visited_nodes) - 1:
             final_delivery_matrix_index = some_distance_matrix[0].index(route_info["address"])
             return_to_hub_distance = some_distance_matrix[final_delivery_matrix_index][1]
 
@@ -169,14 +168,14 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
                 "destination_number": d + 1,
                 "address": HUB_ADDRESS,
                 "associated_packages": None,
-                "distance": return_to_hub_distance
+                "distance": sum(distance_traveled_array[0:d]) + return_to_hub_distance
             }
+            nearest_neighbor_route[d + 1] = route_termination_info
         # Add dictionary value for each destination to route dictionary.
         nearest_neighbor_route[d] = route_info
 
         # Add return to HUB to delivery route if all deliveries for route are complete.
-        if d == len(visited_nodes):
-            nearest_neighbor_route[d + 1] = route_termination_info
+
 
     # Return the route dictionary for assignment where called.
     return nearest_neighbor_route

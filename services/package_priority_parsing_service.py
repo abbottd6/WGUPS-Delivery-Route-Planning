@@ -1,62 +1,83 @@
-from UI_components.print_route_metadata import print_route_metadata
-from entities.package import Package
 from entities.route import Route
-from entities.truck import Truck
 from services.delivery_batch_builder import delivery_batch_builder
 from services.distance_matrix_builder import distance_matrix_builder
 from services.nearest_neighbor_path_generator import nearest_neighbor_path_generator
-from utils.calc_travel_time import calc_travel_time
-from UI_components.print_all_packages import print_all_packages
 from utils.custom_hash_table import PackageHashTable
 
 def package_priority_parsing_service(some_package_keys, some_package_hash_table):
+
+    not_corrected = True
 
     # Create arrays for three separate package priority classifications.
     priority_package_keys = []
     constrained_package_keys = []
     standard_package_keys = []
 
-    package_to_correct = some_package_hash_table.get_by_id(9)
-    package_to_correct.update(
-        address="410 S State St",
-        city="Salt Lake City",
-        state="UT",
-        zip_code="84111",
-        deadline="EOD",
-        weight=2,
-        notes="Address corrected at 10:20 AM"
-    )
-
-    print("Package corrected", package_to_correct)
-
     # Use package_id from package_keys to loop through all packages to determine
     # package priority classification.
     for package_id in some_package_keys:
         temp_package = some_package_hash_table.get_by_id(package_id)
         # if a package has any delivery note, then it is a constrained package.
-        if temp_package.notes:
+        if temp_package.notes and not "Wrong address" in temp_package.notes:
             constrained_package_keys.append(package_id)
         # If a package has a delivery deadline, and the package is not already
         # in constrained packages, then it is assigned to the priority packages array.
-        if "EOD" not in temp_package.deadline:
-            if package_id in constrained_package_keys:
-                continue
-            else:
-                priority_package_keys.append(package_id)
+        elif not temp_package.notes and not temp_package.deadline[0].isalpha():
+            if package_id not in constrained_package_keys and package_id not in standard_package_keys:
+                association_check = some_package_hash_table.get_by_id(package_id)
+                associated_packages = some_package_hash_table.get_by_address(association_check.address)
+                if len(priority_package_keys) + len(associated_packages) <= 16:
+                    for package in associated_packages:
+                        if package.notes:
+                            continue
+                        if package.package_id not in priority_package_keys and package.package_id not in standard_package_keys:
+                            priority_package_keys.append(package.package_id)
         # If a package is neither assigned to constrained packages nor priority packages,
         # then it is a standard package.
-        if package_id not in constrained_package_keys and package_id not in priority_package_keys:
-            # There are too many standard packages to fit on one truck,
-            # so standard packages are assigned to standard package array, so long as the
-            # number of packages in standard packages does not exceed truck capacity.
-            # When the standard package array reaches maximum size, the remaining standard
-            # packages are dispersed between priority and constrained package arrays
-            if len(standard_package_keys) < 16:
-                standard_package_keys.append(package_id)
-            elif len(priority_package_keys):
-                priority_package_keys.append(package_id)
-            elif len(constrained_package_keys):
-                constrained_package_keys.append(package_id)
+        else:
+            if package_id not in constrained_package_keys and package_id not in priority_package_keys:
+                # There are too many standard packages to fit on one truck,
+                # so standard packages are assigned to standard package array, so long as the
+                # number of packages in standard packages does not exceed truck capacity.
+                # When the standard package array reaches maximum size, the remaining standard
+                # packages are dispersed between priority and constrained package arrays
+                if ((len(standard_package_keys) < 16) and (package_id not in priority_package_keys)
+                        and (package_id not in constrained_package_keys)):
+                    standard_package_keys.append(package_id)
+                elif ((len(priority_package_keys) < 16) and (package_id not in priority_package_keys)
+                      and (package_id not in constrained_package_keys)):
+                    priority_package_keys.append(package_id)
+                elif ((len(constrained_package_keys) < 16) and (package_id not in priority_package_keys)
+                      and (package_id not in constrained_package_keys)):
+                    constrained_package_keys.append(package_id)
+
+    if not_corrected:
+        package_to_correct = some_package_hash_table.get_by_id(9)
+        package_to_correct.update(
+            address="410 S State St",
+            city="Salt Lake City",
+            state="UT",
+            zip_code="84111",
+            deadline="EOD",
+            weight=2,
+            notes="Address corrected at 10:20 AM"
+        )
+        not_corrected = False
+
+    # keys_comparison_check = priority_package_keys.copy()
+    # keys_comparison_check.extend(constrained_package_keys)
+    # keys_comparison_check.extend(standard_package_keys)
+    # keys_comparison_check.sort()
+    #
+    # seen = set()
+    # print(keys_comparison_check)
+    # for package_id in keys_comparison_check:
+    #     if package_id in seen:
+    #         print("Package id " + str(package_id) + " is duplicated.")
+    #     else:
+    #         seen.add(package_id)
+    # print("non duplicate count", len(seen))
+    # print("duplicate count", len(keys_comparison_check))
 
     # Create hash tables for each package classification array based on the size of the array
     constrained_delivery_package_table = PackageHashTable(len(constrained_package_keys))
