@@ -1,4 +1,4 @@
-from utils.calc_travel_time import calc_travel_time
+from utils.calc_travel_time_minutes import calc_travel_time_minutes
 from datetime import datetime
 
 time_format = "%I:%M %p"
@@ -126,7 +126,7 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
             })
             # print(visited_nodes[0])
 
-            path_time = calc_travel_time(nearest_neighbor[1])
+            path_time = calc_travel_time_minutes(nearest_neighbor[1])
 
             aggregate_time += path_time
             distance_traveled_array.append(nearest_neighbor[1])

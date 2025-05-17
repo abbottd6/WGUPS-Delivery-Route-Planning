@@ -8,6 +8,7 @@ def main_menu():
     print("2) Print Single Package Info by ID")
     print("3) Get a Single Package Status at A Given Time")
     print("4) Get All Package Statuses at A Given Time")
-    print("5) Exit Program")
+    print("5) Print route data by truck number")
+    print("6) Exit Program")
     print(f"{line_format:_<200}\n")
 

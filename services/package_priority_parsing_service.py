@@ -1,7 +1,8 @@
 from entities.route import Route
-from services.delivery_batch_builder import delivery_batch_builder
+from services.batch_truck_load_service import batch_truck_load_service
 from services.distance_matrix_builder import distance_matrix_builder
 from services.nearest_neighbor_path_generator import nearest_neighbor_path_generator
+from utils.calc_travel_time_minutes import calc_travel_time_minutes
 from utils.custom_hash_table import PackageHashTable
 
 def package_priority_parsing_service(some_package_keys, some_package_hash_table):
@@ -114,38 +115,59 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
                                                               standard_package_distance_matrix)
 
     # Take delivery route and load packages into truck
-    delivery_batch_builder(priority_delivery_route, priority_package_keys,
-                           priority_delivery_package_table, "priority batch")
+    batch_truck_load_service(priority_delivery_route, priority_package_keys,
+                             priority_delivery_package_table, "priority batch")
 
-    delivery_batch_builder(constrained_delivery_route, constrained_package_keys,constrained_delivery_package_table,
+    batch_truck_load_service(constrained_delivery_route, constrained_package_keys, constrained_delivery_package_table,
                            "constrained batch")
 
-    delivery_batch_builder(standard_delivery_route, standard_package_keys, standard_delivery_package_table,
+    batch_truck_load_service(standard_delivery_route, standard_package_keys, standard_delivery_package_table,
                            "standard batch")
 
+    # Retrieve the max (last) key for each route to use for distance calculation
+    priority_route_max_key = max(priority_delivery_route.keys())
+    constrained_route_max_key = max(constrained_delivery_route.keys())
+    standard_route_max_key = max(standard_delivery_route.keys())
+
+    # Calculate total distances for routes
+    priority_route_total_distance = priority_delivery_route[priority_route_max_key]["distance"]
+    constrained_route_total_distance = constrained_delivery_route[constrained_route_max_key]["distance"]
+    standard_route_total_distance = standard_delivery_route[standard_route_max_key]["distance"]
+
+    # Calculate total route duration
+    priority_route_duration = calc_travel_time_minutes(priority_route_total_distance)
+    constrained_route_duration = calc_travel_time_minutes(constrained_route_total_distance)
+    standard_route_duration = calc_travel_time_minutes(standard_route_total_distance)
+
     priority_route_object = Route(
-        route_label="Priority Packages",
-        route_package_keys=priority_package_keys,
-        route_package_table=priority_delivery_package_table,
-        route_num_destinations=len(priority_package_distance_matrix[0]) - 1,
-        route_distance_matrix=priority_package_distance_matrix,
-        route=priority_delivery_route
+        label="Priority Packages",
+        package_keys=priority_package_keys,
+        package_table=priority_delivery_package_table,
+        num_destinations=len(priority_package_distance_matrix[0]) - 1,
+        distance_matrix=priority_package_distance_matrix,
+        route_metadata=priority_delivery_route,
+        total_distance=priority_route_total_distance,
+        duration=priority_route_duration,
     )
     constrained_route_object = Route(
-        route_label="Constrained Packages",
-        route_package_keys=constrained_package_keys,
-        route_package_table=constrained_delivery_package_table,
-        route_num_destinations=len(constrained_package_distance_matrix[0]) - 1,
-        route_distance_matrix=constrained_package_distance_matrix,
-        route=constrained_delivery_route
+        label="Constrained Packages",
+        package_keys=constrained_package_keys,
+        package_table=constrained_delivery_package_table,
+        num_destinations=len(constrained_package_distance_matrix[0]) - 1,
+        distance_matrix=constrained_package_distance_matrix,
+        route_metadata=constrained_delivery_route,
+        total_distance=constrained_route_total_distance,
+        duration=constrained_route_duration,
     )
     standard_route_object = Route(
-        route_label="Standard Packages",
-        route_package_keys=standard_package_keys,
-        route_package_table=standard_delivery_package_table,
-        route_num_destinations=len(standard_package_distance_matrix[0]) - 1,
-        route_distance_matrix=standard_package_distance_matrix,
-        route = standard_delivery_route
+        label="Standard Packages",
+        package_keys=standard_package_keys,
+        package_table=standard_delivery_package_table,
+        num_destinations=len(standard_package_distance_matrix[0]) - 1,
+        distance_matrix=standard_package_distance_matrix,
+        route_metadata=standard_delivery_route,
+        total_distance=standard_route_total_distance,
+        duration=standard_route_duration,
     )
 
     route_objects = [priority_route_object, constrained_route_object, standard_route_object]

@@ -1,13 +1,15 @@
 from collections import deque
 
-
 class Truck:
     trucks_dict = {}
 
-    def __init__(self, truck_id, driver_id, current_location):
+    def __init__(self, truck_id, driver_id, route_start_time, en_route_time, current_location="HUB"):
         self.truck_id = truck_id
         self.driver_id = driver_id
         self.packages = deque()
+        self.route_start_time = route_start_time
+        self.en_route_time = en_route_time
+
         self.current_location = current_location
 
         Truck.trucks_dict[truck_id] = self

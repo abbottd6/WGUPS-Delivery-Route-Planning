@@ -1,7 +1,7 @@
 from entities.truck import Truck
 from collections import deque
 
-def delivery_batch_builder(route_path, some_package_keys, some_package_hash_table, label):
+def batch_truck_load_service(route_path, some_package_keys, some_package_hash_table, label):
     total_package_count = 0
     batch = deque()
     batch_package_count = 0
