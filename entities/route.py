@@ -21,6 +21,11 @@ class Route:
         num_destinations = len(self.distance_matrix[0])
         return (f"{line_format:_<400}\n \n{package_table}\n"
                 f"{print_dist_matrix(self.distance_matrix, num_destinations)}"
+                f"\n\n"
+                f"{line_format:_<400}"
+                f"\n"
+                f"NEAREST NEIGHBOR OPTIMIZED ROUTE DESTINATION DETAILS"
+                f"\n"
                 f"{print_route_metadata(self.metadata, self.num_destinations)}\n"
-                f"Route Distance Total: {self.total_distance}\n"
-                f"Route Duration: {self.duration}\n")
+                f"Route Distance Total: {self.total_distance} miles\n"
+                f"Route Duration: {self.duration} minutes\n")

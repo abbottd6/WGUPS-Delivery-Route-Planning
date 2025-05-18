@@ -23,12 +23,16 @@ class Truck:
         driver_info = f"Driver ID: {self.driver_id}"
         packages_str = "\n".join(str(p) for p in self.packages) if self.packages else "No packages loaded"
         line_format = ""
+        if not isinstance(self.route_start_time, str) and self.route_start_time is not None:
+            start_time = datetime.strftime(self.route_start_time, TIME_FORMAT)
+        else:
+            start_time = self.route_start_time
         return (f"\n{line_format:_<400}\n"
                 f"Batch #{self.truck_id} Loaded onto Truck for Optimized Route:"
                 f"\n{line_format:_<400}\n"
                 f"{truck_info:<4}\n"
                 f"{driver_info:<4}\n"
-                f"Departure Time: {datetime.strftime(self.route_start_time, TIME_FORMAT)}\n"
+                f"Departure Time: {start_time}\n"
                 f"Time on Route: {self.en_route_time} minutes\n"
                 f"Truck Route Distance Traveled: {self.distance_traveled} miles\n"
                 f"Truck Status: {self.status}\n\n"

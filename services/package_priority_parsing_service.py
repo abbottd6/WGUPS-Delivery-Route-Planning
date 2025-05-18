@@ -1,3 +1,5 @@
+import copy
+
 from entities.route import Route
 from services.batch_truck_load_service import batch_truck_load_service
 from services.distance_matrix_builder import distance_matrix_builder
@@ -7,6 +9,7 @@ from utils.custom_hash_table import PackageHashTable
 
 def package_priority_parsing_service(some_package_keys, some_package_hash_table):
 
+    instanced_package_hash_table = copy.deepcopy(some_package_hash_table)
     not_corrected = True
 
     # Create arrays for three separate package priority classifications.
@@ -17,7 +20,7 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
     # Use package_id from package_keys to loop through all packages to determine
     # package priority classification.
     for package_id in some_package_keys:
-        temp_package = some_package_hash_table.get_by_id(package_id)
+        temp_package = instanced_package_hash_table.get_by_id(package_id)
         # if a package has any delivery note, then it is a constrained package.
         if temp_package.notes and not "Wrong address" in temp_package.notes:
             constrained_package_keys.append(package_id)
@@ -25,8 +28,8 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
         # in constrained packages, then it is assigned to the priority packages array.
         elif not temp_package.notes and not temp_package.deadline[0].isalpha():
             if package_id not in constrained_package_keys and package_id not in standard_package_keys:
-                association_check = some_package_hash_table.get_by_id(package_id)
-                associated_packages = some_package_hash_table.get_by_address(association_check.address)
+                association_check = instanced_package_hash_table.get_by_id(package_id)
+                associated_packages = instanced_package_hash_table.get_by_address(association_check.address)
                 if len(priority_package_keys) + len(associated_packages) <= 16:
                     for package in associated_packages:
                         if package.notes:
@@ -53,7 +56,7 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
                     constrained_package_keys.append(package_id)
 
     if not_corrected:
-        package_to_correct = some_package_hash_table.get_by_id(9)
+        package_to_correct = instanced_package_hash_table.get_by_id(9)
         package_to_correct.update(
             address="410 S State St",
             city="Salt Lake City",
@@ -87,11 +90,11 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
 
     # Take package classification arrays and build distinct hash tables for each classification
     for package_id in priority_package_keys:
-        priority_delivery_package_table.insert(package_id, some_package_hash_table.get_by_id(package_id))
+        priority_delivery_package_table.insert(package_id, instanced_package_hash_table.get_by_id(package_id))
     for package_id in constrained_package_keys:
-        constrained_delivery_package_table.insert(package_id, some_package_hash_table.get_by_id(package_id))
+        constrained_delivery_package_table.insert(package_id, instanced_package_hash_table.get_by_id(package_id))
     for package_id in standard_package_keys:
-        standard_delivery_package_table.insert(package_id, some_package_hash_table.get_by_id(package_id))
+        standard_delivery_package_table.insert(package_id, instanced_package_hash_table.get_by_id(package_id))
 
     # Take classification distinct package hash tables and generate distance matrices for packages
     # in that classification group

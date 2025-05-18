@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta, date
 
 from entities.truck import Truck
+from services.package_data_parser import package_hash_table, package_keys
 from services.package_priority_parsing_service import package_priority_parsing_service
 from utils.calc_travel_time_minutes import calc_travel_time_minutes
+from utils.instantiate_delivery_infra import instantiate_delivery_infra
 
 today = date.today()
 TIME_FORMAT = "%I:%M %p"
@@ -13,7 +15,8 @@ TRUCK1_START_TIME = datetime.combine(today, temp_truck1_time)
 temp_truck2_time = datetime.strptime("09:05 AM", TIME_FORMAT).time()
 TRUCK2_START_TIME = datetime.combine(today, temp_truck2_time)
 
-def start_delivery_service(all_package_keys, all_package_hash_table, all_distance_matrix):
+# Generate route data for delivery service
+def start_delivery_service(all_package_keys, all_package_hash_table):
 
     route_objects = package_priority_parsing_service(all_package_keys, all_package_hash_table)
 
@@ -35,6 +38,8 @@ def query_delivery_service(time, route_objects, condition_code):
     truck1 = all_trucks[1]
     truck2 = all_trucks[2]
     truck3 = all_trucks[3]
+
+    all_trucks_elapsed_time = 0
 
     # CREATE COPIES OF ROUTE SPECIFIC HASH TABLES FOR STATUS ALTERATIONS
     this_temp_routes = route_objects.copy()
@@ -95,12 +100,14 @@ def query_delivery_service(time, route_objects, condition_code):
         # and the truck returned to the hub.
         if parsed_input_time > route_completion_times[i]:
             truck.status = "Returned to Hub"
+            all_trucks_elapsed_time = all_trucks_elapsed_time + truck.en_route_time
             truck.driver_id = None
 
         # If the en route time for the truck is less than zero, then it has not left the hub yet.
-        # elif time_dif <= timedelta(0):
-        #     truck.distance_traveled = 0
-        #     truck.en_route_time = 0
+        elif time_dif <= timedelta(0):
+            truck.distance_traveled = 0
+            truck.en_route_time = 0
+
 
     # for truck in all_trucks.values():
     #     print(truck)
@@ -117,31 +124,43 @@ def query_delivery_service(time, route_objects, condition_code):
                 elif destination["distance"] > truck.distance_traveled:
                     for package in truck.packages:
                         if destination["address"] in package.address:
-                            package.status = "Package en route"
+                            package.status = "Package en route: Truck #" + str(truck.truck_id)
 
-    for truck in all_trucks.values():
-        print(truck)
-    # CHECK INPUT CONDITION CODE TO DETERMINE QUERY RESPONSE
+    # Check input condition_code to determine query response
     # IF CONDITION_CODE == 1
-        # RETURN PARENT HASH TABLE FOR EOD
-            # WITH INDIVIDUAL TRUCK EN ROUTE TIMES
-            # INDIVIDUAL ROUTE TOTAL DISTANCES
-            # COMBINED TOTAL DISTANCE FOR ALL TRUCKS
+    if condition_code == 1:
+
+        all_truck_hours = int(all_trucks_elapsed_time / 60)
+        all_truck_mins = int(all_trucks_elapsed_time % 60)
+
+        for truck in all_trucks.values():
+            print(truck)
+        print("TOTAL DELIVERY MILEAGE: ", truck1.distance_traveled + truck2.distance_traveled
+              + truck3.distance_traveled, "miles\n")
+        print("TOTAL DRIVER TIME (CONCURRENT): ", all_truck_hours, "hours and", all_truck_mins, "minutes\n")
 
     # IGNORE CONDITION_CODE 2, ITS HANDLED ELSEWHERE
+    if condition_code == 2:
+        return
 
     # IF CONDITION_CODE == 3
-        # GET USER_INPUT FOR PACKAGE NUMBER
-        # RETURN PACKAGE METADATA AT PROVIDED TIME
+    if condition_code == 3:
+        requested_package = int(input("Input package number (1-40):\n"))
+        for truck in all_trucks.values():
+            for package in truck.packages:
+                if requested_package == package.package_id:
+                    print("Package requested: \n", package)
 
     # IF CONDITION_CODE == 4
-        # RETURN ALL PACKAGE METADATA AT PROVIDED TIME
+    if condition_code == 4:
+        for truck in all_trucks.values():
+            print(truck)
 
     # IGNORE CONDITION_CODE 5, ITS HANDLED ELSEWHERE
+    if condition_code == 5:
+        return
 
-    # print("Priority Route Total Distance: ", priority_total_distance)
-    #
-    # print(f"Truck 1 Distance: {truck1_distance_traveled}")
-    # print(f"Truck 2 Distance: {truck2_distance_traveled}")
+    if condition_code == 6:
+        exit(1)
 
 
