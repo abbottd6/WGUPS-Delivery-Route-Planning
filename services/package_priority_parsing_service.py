@@ -139,13 +139,15 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
     constrained_route_duration = calc_travel_time_minutes(constrained_route_total_distance)
     standard_route_duration = calc_travel_time_minutes(standard_route_total_distance)
 
+    #
+
     priority_route_object = Route(
         label="Priority Packages",
         package_keys=priority_package_keys,
         package_table=priority_delivery_package_table,
         num_destinations=len(priority_package_distance_matrix[0]) - 1,
         distance_matrix=priority_package_distance_matrix,
-        route_metadata=priority_delivery_route,
+        metadata=priority_delivery_route,
         total_distance=priority_route_total_distance,
         duration=priority_route_duration,
     )
@@ -155,7 +157,7 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
         package_table=constrained_delivery_package_table,
         num_destinations=len(constrained_package_distance_matrix[0]) - 1,
         distance_matrix=constrained_package_distance_matrix,
-        route_metadata=constrained_delivery_route,
+        metadata=constrained_delivery_route,
         total_distance=constrained_route_total_distance,
         duration=constrained_route_duration,
     )
@@ -165,7 +167,7 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
         package_table=standard_delivery_package_table,
         num_destinations=len(standard_package_distance_matrix[0]) - 1,
         distance_matrix=standard_package_distance_matrix,
-        route_metadata=standard_delivery_route,
+        metadata=standard_delivery_route,
         total_distance=standard_route_total_distance,
         duration=standard_route_duration,
     )

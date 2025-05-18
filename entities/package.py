@@ -23,7 +23,7 @@ class Package:
     # for improved readability
     def __str__(self):
         package_label = f"Package {self.package_id}:"
-        return (f"{package_label:<14} {self.status:<10} {self.address:50} "
+        return (f"{package_label:<14} {self.status:<30} {self.address:50} "
                 f"{self.city:20} {self.state:8} {self.zip_code:8} "
                 f"{self.deadline:10} {self.weight:8}kg {self.notes:^65}")
 
