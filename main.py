@@ -5,55 +5,56 @@ from UI_components.prompt_for_package_id import prompt_for_package_id
 from UI_components.main_menu import main_menu
 from utils.instantiate_delivery_infra import instantiate_delivery_infra
 
-exit_delivery_monitor = False
+
 line_format = ""
 
-while not exit_delivery_monitor:
+def get_fresh_routes():
+    instantiate_delivery_infra()
+    routes = start_delivery_service(package_keys, package_hash_table)
+    return routes
 
-    main_menu()
+def main():
 
-    user_input = input()
+    exit_delivery_monitor = False
 
-    # Print all package status and mileage
-    # when deliveries are completed
-    if user_input == '1':
-        instantiate_delivery_infra()
-        routes = start_delivery_service(package_keys, package_hash_table)
+    while not exit_delivery_monitor:
 
-        query_delivery_service("6:00 PM", routes, int(user_input))
+        main_menu()
+        routes = get_fresh_routes()
 
-    # Print single package info by ID
-    if user_input == '2':
-        instantiate_delivery_infra()
-        routes = start_delivery_service(package_keys, package_hash_table)
+        user_input = input()
 
-        prompt_for_package_id()
+        # Print all package status and mileage
+        # when deliveries are completed
+        if user_input == '1':
+            query_delivery_service("6:00 PM", routes, int(user_input))
 
-    # Get single package status at a given time
-    if user_input == '3':
-        instantiate_delivery_infra()
-        routes = start_delivery_service(package_keys, package_hash_table)
+        # Print single package info by ID
+        elif user_input == '2':
+            prompt_for_package_id()
 
-        user_time = input("Enter time in format: HH:MM AM/PM\n (space between time and AM/PM)\n")
-        query_delivery_service(user_time, routes, 3)
+        # Get single package status at a given time
+        elif user_input == '3':
+            user_time = input("Enter time in format: HH:MM AM/PM\n (space between time and AM/PM)\n")
+            query_delivery_service(user_time, routes, 3)
 
-    # Get all package statuses at given time
-    if user_input == '4':
-        instantiate_delivery_infra()
-        routes = start_delivery_service(package_keys, package_hash_table)
+        # Get all package statuses at given time
+        elif user_input == '4':
+            user_time = input("Enter time in format: HH:MM:AM/PM\n (space between time and AM/PM)\n")
+            query_delivery_service(user_time, routes, 4)
 
-        user_time = input("Enter time in format: HH:MM:AM/PM\n (space between time and AM/PM)\n")
-        query_delivery_service(user_time, routes, 4)
+        # print route data based on truck number
+        elif user_input == '5':
+            route_number = int(input("Enter route number (1-3)\n"))
+            print(Truck.trucks_dict[route_number])
+            print_route_data(routes, route_number - 1)
 
-    # print route data based on truck number
-    if user_input == '5':
-        instantiate_delivery_infra()
-        routes = start_delivery_service(package_keys, package_hash_table)
+        # Exit program
+        elif user_input == '6':
+            exit_delivery_monitor = True
 
-        route_number = int(input("Enter route number (1-3)\n"))
-        print(Truck.trucks_dict[route_number])
-        print_route_data(routes, route_number - 1)
+        else:
+            print("Invalid input. Please try again.")
 
-    # Exit program
-    if user_input == '6':
-        exit_delivery_monitor = True
+if __name__ == '__main__':
+    main()

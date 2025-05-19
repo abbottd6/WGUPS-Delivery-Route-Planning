@@ -39,7 +39,8 @@ def batch_truck_load_service(route_path, some_package_keys, some_package_hash_ta
 
         # Compare what the size of the batch would be if associated_packages were added to the batch.
         # Do not attempt to load if batch size would be above truck capacity.
-        if (batch_package_count + len(address_associated_packages) <= 16) and total_package_count < len(some_package_keys):
+        if ((batch_package_count + len(address_associated_packages) <= 16) and total_package_count
+                < len(some_package_keys)):
             for package in address_associated_packages:
                     batch.append(some_package_hash_table.get_by_id(package.package_id))
                     batch_package_count += 1
@@ -57,7 +58,8 @@ def batch_truck_load_service(route_path, some_package_keys, some_package_hash_ta
 
         # Once the number of packages in a batch reaches the maximum possible per constraints,
         # load the packages onto corresponding truck and clear batch to start new.
-        if (batch_package_count == 16) or (package_match_count == len(some_package_keys)) or can_load_more == False:
+        if ((batch_package_count == 16) or (package_match_count == len(some_package_keys))
+                or can_load_more == False):
 
             # print("\nTruck number: ", truck_number)
             # print("Batch", truck_number, "package count: ", batch_package_count)

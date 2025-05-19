@@ -1,10 +1,8 @@
 from datetime import datetime, timedelta, date
 
 from entities.truck import Truck
-from services.package_data_parser import package_hash_table, package_keys
 from services.package_priority_parsing_service import package_priority_parsing_service
 from utils.calc_travel_time_minutes import calc_travel_time_minutes
-from utils.instantiate_delivery_infra import instantiate_delivery_infra
 
 today = date.today()
 TIME_FORMAT = "%I:%M %p"
@@ -108,19 +106,29 @@ def query_delivery_service(time, route_objects, condition_code):
             truck.distance_traveled = 0
             truck.en_route_time = 0
 
-
-    # for truck in all_trucks.values():
-    #     print(truck)
-
+    # Calculate the statuses of all packages at user input time.
+    # Loop through all Trucks.
     for i, truck in enumerate(all_trucks.values(), start=0):
+        # If the truck has left the Hub
         if truck.en_route_time > 0:
+            # Loop through all destinations for a given truck
             for destination in this_temp_routes[i].metadata.values():
                 if destination["distance"] <= truck.distance_traveled:
+                    # Loop through all packages on this truck to find all packages associated with this address
                     for package in truck.packages:
+                        # If, by user input time, the given truck has traveled far enough to have reached the
+                        # package of this loop iteration, then the package has been delivered.
                         if destination["address"] in package.address:
+                            # Calculate the elapsed time from truck departure to delivery of packages for this address.
                             en_route_time_to_delivery = calc_travel_time_minutes(destination["distance"])
+                            # Calculate the delivery time of packages associated with this address.
                             package_delivery_time = (truck.route_start_time + timedelta(minutes=en_route_time_to_delivery))
+                            # Set the package status of each package at this address to the calculated delivery time.
                             package.status = "Delivered: " + datetime.strftime(package_delivery_time, TIME_FORMAT)
+                # If the truck has not traveled far enough to reach this loop iteration destination, the package
+                # has not been delivered yet.
+                # If this point in the control structure has been reached, then the package is out for delivery.
+                # Set the status of the packages associated with this destination to en route
                 elif destination["distance"] > truck.distance_traveled:
                     for package in truck.packages:
                         if destination["address"] in package.address:

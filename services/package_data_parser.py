@@ -20,16 +20,17 @@ package_rows = [row for row in package_data[0:] if row[0].strip().isdigit()]
 distance_table_rows = []
 for row in distance_table[0:]:
     try:
-        # if the value at index position 2 (distance from hub) of the row cannot be converted to a float
-        # then the row is not a recipient row and should not be included in the recipient count
+        # if the value at index position 2 (distance from hub) of the row cannot be
+        # converted to a float, then the row is not a recipient row and should not
+        # be included in the recipient count
         float(row[2])
 
-        # Adding each recipient row to the distance_table_rows to reconstruct the recipient
-        # table, but with only the rows representing recipients
+        # Adding each recipient row to the distance_table_rows to reconstruct the
+        # recipient table, but with only the rows representing recipients
         distance_table_rows.append(row)
 
-    # catching errors from the attempt to convert to float from above and continuing, i.e. skipping
-    # that row if float conversion throws an error
+    # catching errors from the attempt to convert to float from above and continuing,
+    # i.e. skipping that row if float conversion throws an error
     except(ValueError, TypeError):
         continue
 
@@ -115,5 +116,3 @@ for row in distance_table_rows:
             continue
 
     index += 1
-
-

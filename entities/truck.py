@@ -6,7 +6,8 @@ TIME_FORMAT = "%I:%M %p"
 class Truck:
     trucks_dict = {}
 
-    def __init__(self, truck_id, driver_id, route_start_time, en_route_time, status, distance_traveled):
+    def __init__(self, truck_id, driver_id, route_start_time,
+                 en_route_time, status, distance_traveled):
         self.truck_id = truck_id
         self.driver_id = driver_id
         self.packages = deque()
@@ -21,7 +22,8 @@ class Truck:
     def __str__(self):
         truck_info = f"Truck #{self.truck_id}"
         driver_info = f"Driver ID: {self.driver_id}"
-        packages_str = "\n".join(str(p) for p in self.packages) if self.packages else "No packages loaded"
+        packages_str = "\n".join(str(p) for p in self.packages) \
+            if self.packages else "No packages loaded"
         line_format = ""
         if not isinstance(self.route_start_time, str) and self.route_start_time is not None:
             start_time = datetime.strftime(self.route_start_time, TIME_FORMAT)

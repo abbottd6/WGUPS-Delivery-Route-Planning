@@ -1,3 +1,17 @@
+# defining static method to generate the next prime that is
+# greater than argument 'num'
+def _increment_for_prime(num):
+    def is_prime(x):
+        if x <= 1:
+            return False
+        for i in range(2, x):
+            if x % i == 0:
+                return False
+        return True
+    while not is_prime(num):
+        num += 1
+    return num
+
 class PackageHashTable:
 
     # The constructor for hash table to determine size and create table
@@ -50,16 +64,4 @@ class PackageHashTable:
                     package_match.append(v)
         return package_match
 
-# defining static method to generate the next prime that is
-# greater than argument 'num'
-def _increment_for_prime(num):
-    def is_prime(x):
-        if x <= 1:
-            return False
-        for i in range(2, x):
-            if x % i == 0:
-                return False
-        return True
-    while not is_prime(num):
-        num += 1
-    return num
+

@@ -34,7 +34,8 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
                     for package in associated_packages:
                         if package.notes:
                             continue
-                        if package.package_id not in priority_package_keys and package.package_id not in standard_package_keys:
+                        if (package.package_id not in priority_package_keys
+                                and package.package_id not in standard_package_keys):
                             priority_package_keys.append(package.package_id)
         # If a package is neither assigned to constrained packages nor priority packages,
         # then it is a standard package.
@@ -67,21 +68,6 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
             notes="Address corrected at 10:20 AM"
         )
         not_corrected = False
-
-    # keys_comparison_check = priority_package_keys.copy()
-    # keys_comparison_check.extend(constrained_package_keys)
-    # keys_comparison_check.extend(standard_package_keys)
-    # keys_comparison_check.sort()
-    #
-    # seen = set()
-    # print(keys_comparison_check)
-    # for package_id in keys_comparison_check:
-    #     if package_id in seen:
-    #         print("Package id " + str(package_id) + " is duplicated.")
-    #     else:
-    #         seen.add(package_id)
-    # print("non duplicate count", len(seen))
-    # print("duplicate count", len(keys_comparison_check))
 
     # Create hash tables for each package classification array based on the size of the array
     constrained_delivery_package_table = PackageHashTable(len(constrained_package_keys))
@@ -141,8 +127,6 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
     priority_route_duration = calc_travel_time_minutes(priority_route_total_distance)
     constrained_route_duration = calc_travel_time_minutes(constrained_route_total_distance)
     standard_route_duration = calc_travel_time_minutes(standard_route_total_distance)
-
-    #
 
     priority_route_object = Route(
         label="Priority Packages",

@@ -1,6 +1,4 @@
 from services.package_data_parser import distance_matrix
-from UI_components.print_dist_matrix import print_dist_matrix
-
 
 def distance_matrix_builder(some_package_keys, some_package_hash_table):
     hub = distance_matrix[0][1]
