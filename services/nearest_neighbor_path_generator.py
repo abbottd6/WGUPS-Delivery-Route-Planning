@@ -119,7 +119,6 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
             # Add associated_packages address to visited nodes if there are packages associated with
             # this address.
             current_node_address = nearest_neighbor[0]
-
             visited_nodes.append({
                 "address": current_node_address,
                 "associated_packages": associated_packages
@@ -170,9 +169,10 @@ def nearest_neighbor_path_generator(some_package_keys, some_package_hash_table,
                 "associated_packages": None,
                 "distance": sum(distance_traveled_array[0:d]) + return_to_hub_distance
             }
-            nearest_neighbor_route[d + 1] = route_termination_info
         # Add dictionary value for each destination to route dictionary.
         nearest_neighbor_route[d] = route_info
+        if d == len(visited_nodes) - 1:
+            nearest_neighbor_route[d + 1] = route_termination_info
 
         # Add return to HUB to delivery route if all deliveries for route are complete.
 

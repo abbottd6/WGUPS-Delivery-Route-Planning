@@ -10,7 +10,6 @@ from utils.custom_hash_table import PackageHashTable
 def package_priority_parsing_service(some_package_keys, some_package_hash_table):
 
     instanced_package_hash_table = copy.deepcopy(some_package_hash_table)
-    not_corrected = True
 
     # Create arrays for three separate package priority classifications.
     priority_package_keys = []
@@ -55,19 +54,6 @@ def package_priority_parsing_service(some_package_keys, some_package_hash_table)
                 elif ((len(constrained_package_keys) < 16) and (package_id not in priority_package_keys)
                       and (package_id not in constrained_package_keys)):
                     constrained_package_keys.append(package_id)
-
-    if not_corrected:
-        package_to_correct = instanced_package_hash_table.get_by_id(9)
-        package_to_correct.update(
-            address="410 S State St",
-            city="Salt Lake City",
-            state="UT",
-            zip_code="84111",
-            deadline="EOD",
-            weight=2,
-            notes="Address corrected at 10:20 AM"
-        )
-        not_corrected = False
 
     # Create hash tables for each package classification array based on the size of the array
     constrained_delivery_package_table = PackageHashTable(len(constrained_package_keys))
