@@ -80,17 +80,22 @@ def query_delivery_service(time, route_objects, condition_code):
         time_dif = parsed_input_time - truck.route_start_time
         truck.en_route_time = time_dif.total_seconds() / 60.0
 
+        # Check for delayed packages
         if truck.route_start_time > parsed_input_time:
             for package in truck.packages:
+                # Update the status of delayed packages to reflect this status
                 if "Delayed on flight" in package.notes:
                     package.status = "Delayed on flight"
 
+        # Check user input time to compare with the time at which package 9's address should be updated
         if (parsed_input_time >= PACKAGE_9_CORRECTION_TIME) and truck == truck3:
             for package in truck.packages:
                 if package.package_id == 9:
                     package_no_9 = package
                     break
+            # Check to verify that it has not already been updated
             if "Wrong address" in package_no_9.notes:
+                # Update to correct address
                 package_no_9.update(
                     address="410 S State St",
                     city="Salt Lake City",
@@ -100,22 +105,26 @@ def query_delivery_service(time, route_objects, condition_code):
                     weight=2,
                     notes="Address corrected at 10:20 AM"
                 )
+                # Set condition variable for triggering route recalculation
                 corrected_route_available = False
+                # Find the standard route in route objects
                 for route in this_temp_routes:
                     if route.label == "Standard Packages":
                         incorrect_route = route
 
+                        # Copy the route details
                         temp_route_keys = route.package_keys
                         temp_route_table = route.package_table
+                        # Generate a new matrix to consider the corrected address for route optimization
                         temp_route_matrix = distance_matrix_builder(temp_route_keys, temp_route_table)
+                        # Recalculate route path based on new address
                         updated_standard_route = nearest_neighbor_path_generator(temp_route_keys, temp_route_table,
                                                                                  temp_route_matrix)
                         updated_max_key = max(updated_standard_route.keys())
                         updated_route_distance = updated_standard_route[updated_max_key]["distance"]
                         updated_route_duration = calc_travel_time_minutes(updated_route_distance)
 
-                        print(updated_standard_route)
-
+                        # Instantiate a new Route object with corrected route metadata
                         updated_route_object = Route(
                             label="Standard Packages",
                             package_keys=temp_route_keys,
@@ -126,7 +135,10 @@ def query_delivery_service(time, route_objects, condition_code):
                             total_distance=updated_route_distance,
                             duration=updated_route_duration,
                         )
+                        # Modify the condition variable to reflect that the incorrect route is ready to be replaced
                         corrected_route_available = True
+                # Remove the old route with incorrect address and replace it with the updated route info
+                # Load the new route onto truck 3
                 if corrected_route_available:
                     this_temp_routes.remove(incorrect_route)
                     this_temp_routes.append(updated_route_object)
@@ -134,11 +146,6 @@ def query_delivery_service(time, route_objects, condition_code):
                     batch_truck_load_service(updated_standard_route, updated_route_object.package_keys,
                                              updated_route_object.package_table,
                                              "standard batch")
-
-
-
-
-
 
         # If the truck en_route_time (or time_dif) is less than zero, then the truck has not left the hub
         if 0 < truck.en_route_time:
